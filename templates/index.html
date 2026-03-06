@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VestaBio | Metabolic Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            background-color: #030614;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .hero-section {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: radial-gradient(circle at center, #0a132e 0%, #030614 100%);
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        h1 span {
+            color: #2C7A7B;
+        }
+
+        p {
+            color: #94A3B8;
+            max-width: 600px;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .btn-enter {
+            padding: 18px 40px;
+            background: #2C7A7B;
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 700;
+            transition: 0.3s;
+            box-shadow: 0 10px 30px rgba(44, 122, 123, 0.3);
+        }
+
+        .btn-enter:hover {
+            transform: translateY(-3px);
+            background: #38B2AC;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="hero-section">
+        <div class="temporal-marker"
+            style="color: #2C7A7B; letter-spacing: 4px; font-size: 0.8rem; margin-bottom: 20px;">◈ SYSTEM STATUS: ONLINE
+            ◈</div>
+        <h1>Vesta<span>Bio</span></h1>
+        <p>Predicting metabolic lag through time-series symptom analysis and AI-driven nutritional intelligence.</p>
+
+        <a href="{{ url_for('login') }}" class="btn-enter">
+            ENTER PLATFORM →
+        </a>
+    </div>
+</body>
+
+</html>

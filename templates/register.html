@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VestaBio | Identity Creation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
+                    colors: { dark: '#030712', accent: '#14B8A6' }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: radial-gradient(circle at top right, #1e293b 0%, #030712 100%) no-repeat center center fixed;
+            color: #F8FAFC;
+        }
+
+        .glass {
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.4);
+        }
+
+        .input-glass {
+            background: rgba(3, 7, 18, 0.5);
+            border: 1px solid rgba(51, 65, 85, 0.8);
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .input-glass:focus {
+            outline: none;
+            border-color: #14B8A6;
+            box-shadow: 0 0 10px rgba(20, 184, 166, 0.2);
+        }
+
+        .text-glow {
+            text-shadow: 0 0 15px rgba(20, 184, 166, 0.6);
+        }
+
+        .btn-premium {
+            background: linear-gradient(90deg, #0D9488 0%, #14B8A6 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-premium:hover {
+            box-shadow: 0 0 20px rgba(20, 184, 166, 0.5);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body class="antialiased flex items-center justify-center min-h-screen p-4">
+
+    <div class="glass w-full max-w-md p-10 rounded-3xl relative overflow-hidden group text-center">
+        <!-- Glow effect -->
+        <div
+            class="absolute -right-16 -top-16 w-32 h-32 bg-teal-500/20 rounded-full blur-3xl group-hover:bg-teal-500/30 transition duration-700">
+        </div>
+        <div
+            class="absolute -left-16 -bottom-16 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl group-hover:bg-blue-500/30 transition duration-700">
+        </div>
+
+        <div class="relative z-10">
+            <h2 class="text-4xl font-extrabold tracking-wide text-white flex items-center justify-center gap-3 mb-2">
+                <div class="p-2 rounded-xl bg-teal-500/20 shadow-[0_0_15px_rgba(20,184,166,0.3)]">
+                    <svg class="w-8 h-8 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z">
+                        </path>
+                    </svg>
+                </div>
+                Baseline<span class="text-teal-400 text-glow">Setup</span>
+            </h2>
+            <p class="text-slate-400 text-sm tracking-widest uppercase font-semibold mb-8">Establish Metabolic Profile
+            </p>
+
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            {% for message in messages %}
+            <div class="bg-red-500/10 border border-red-500/50 text-red-400 p-3 rounded-xl mb-6 text-sm">{{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <form method="POST" class="space-y-4">
+                <input type="email" name="email" placeholder="Email Address" required
+                    class="input-glass w-full px-5 py-4 rounded-xl text-lg placeholder-slate-500">
+                <input type="password" name="password" placeholder="Create Secure Password" required
+                    class="input-glass w-full px-5 py-4 rounded-xl text-lg placeholder-slate-500">
+
+                <div class="grid grid-cols-3 gap-4">
+                    <input type="number" name="age" placeholder="Age" required
+                        class="input-glass w-full px-4 py-3 rounded-xl text-sm placeholder-slate-500">
+                    <input type="number" name="height" placeholder="Height (cm)" required
+                        class="input-glass w-full px-4 py-3 rounded-xl text-sm placeholder-slate-500">
+                    <input type="number" name="weight" placeholder="Weight (kg)" required
+                        class="input-glass w-full px-4 py-3 rounded-xl text-sm placeholder-slate-500">
+                </div>
+
+                <select name="sex" required
+                    class="input-glass w-full px-4 py-3 rounded-xl text-slate-300 appearance-none bg-dark text-sm">
+                    <option value="" disabled selected>Physical Biometrics</option>
+                    <option value="male">Male Identity</option>
+                    <option value="female">Female Identity</option>
+                </select>
+
+                <button type="submit"
+                    class="w-full btn-premium tracking-wide text-white font-bold py-4 rounded-xl shadow-lg border border-teal-400/30 mt-4 text-lg">
+                    Generate Baseline Identity
+                </button>
+            </form>
+
+            <p class="mt-8 text-sm text-slate-500 font-light">
+                Identity established? <a href="/login"
+                    class="text-teal-400 hover:text-teal-300 transition-colors border-b border-teal-400/30 hover:border-teal-300 pb-0.5">Authenticate</a>
+            </p>
+        </div>
+    </div>
+
+</body>
+
+</html>

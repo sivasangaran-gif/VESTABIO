@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VestaBio | Global Intelligence Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
+                    colors: {
+                        dark: '#030712', // grayish dark
+                        surface: 'rgba(15, 23, 42, 0.45)', // glass
+                        tealGlow: '#14B8A6',
+                        accent: '#0D9488'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: radial-gradient(circle at top right, #1e293b 0%, #030712 100%) no-repeat center center fixed;
+            color: #F8FAFC;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .glass {
+            background: var(--surface);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.4);
+        }
+
+        .glass-panel {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .text-glow {
+            text-shadow: 0 0 15px rgba(20, 184, 166, 0.6);
+        }
+
+        .btn-premium {
+            background: linear-gradient(90deg, #0D9488 0%, #14B8A6 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-premium:hover {
+            box-shadow: 0 0 20px rgba(20, 184, 166, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-premium:disabled {
+            background: #475569;
+            box-shadow: none;
+            transform: none;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body class="antialiased flex flex-col font-sans">
+
+    <!-- Navigation -->
+    <nav
+        class="w-full glass z-50 sticky top-0 py-4 px-6 md:px-12 flex justify-between items-center transition-all duration-300">
+        <a href="/" class="text-2xl font-extrabold tracking-wide text-white flex items-center gap-3">
+            <div class="p-2 rounded-xl bg-teal-500/20 shadow-[0_0_15px_rgba(20,184,166,0.3)]">
+                <svg class="w-6 h-6 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+            </div>
+            Vesta<span class="text-teal-400 text-glow">Bio</span>
+        </a>
+        <div class="flex items-center space-x-6">
+            <div class="hidden md:flex flex-col text-right">
+                <span class="text-xs text-slate-400 uppercase tracking-widest">Active Link</span>
+                <span class="text-sm font-semibold text-teal-300">{{ profile.email }}</span>
+            </div>
+            <a href="/logout"
+                class="px-5 py-2 rounded-full border border-red-500/30 text-red-400 text-sm hover:bg-red-500/10 hover:border-red-500/70 transition duration-300 shadow-[0_0_10px_rgba(239,68,68,0.1)] font-medium">Disconnect</a>
+        </div>
+    </nav>
+
+    <div class="flex-grow w-full max-w-7xl mx-auto px-4 md:px-8 mt-10 mb-20 grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+
+
+        <!-- Left Sidebar: Identity & Biometrics -->
+        <div class="lg:col-span-4 space-y-6">
+            <!-- Identity Card -->
+            <div class="glass rounded-3xl p-8 relative overflow-hidden group">
+                <div
+                    class="absolute -right-10 -top-10 w-32 h-32 bg-teal-500/10 rounded-full blur-3xl group-hover:bg-teal-500/20 transition duration-700">
+                </div>
+                <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-6 flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></div>
+                    Metabolic Identity
+                </h3>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="glass-panel p-4 rounded-2xl text-center border border-slate-700/50">
+                        <span class="block text-3xl font-extrabold text-teal-300">{{ profile.bmi }}</span>
+                        <span class="block text-[10px] text-slate-500 uppercase tracking-widest mt-1">Current BMI</span>
+                    </div>
+                    <div class="glass-panel p-4 rounded-2xl text-center border border-slate-700/50">
+                        <span class="block text-3xl font-extrabold text-white">{{ profile.weight }}<span
+                                class="text-lg text-slate-400 font-normal">kg</span></span>
+                        <span class="block text-[10px] text-slate-500 uppercase tracking-widest mt-1">Weight</span>
+                    </div>
+                    <div
+                        class="col-span-2 glass-panel p-4 rounded-2xl text-center border border-amber-500/30 bg-amber-500/10 shadow-[0_0_15px_rgba(245,158,11,0.1)]">
+                        <span class="block text-2xl font-black text-amber-400">{{ daily_calories }} <span
+                                class="text-sm font-normal text-amber-500/70">kcal</span></span>
+                        <span class="block text-[10px] text-amber-200/70 uppercase tracking-widest mt-1">Daily Required
+                            Calories</span>
+                    </div>
+                    <div
+                        class="col-span-2 glass-panel p-4 rounded-2xl flex justify-between items-center border border-slate-700/50">
+                        <span class="text-[10px] text-slate-500 uppercase tracking-widest">Height: {{ profile.height
+                            }}cm &nbsp;|&nbsp; Age: {{ profile.age }} &nbsp;|&nbsp; Sex: {{ profile.sex | capitalize
+                            }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Symptom Logger -->
+            <div class="glass rounded-3xl p-8">
+                <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-6">Log Physiological Event</h3>
+                <form action="/log_symptom" method="POST" class="space-y-4">
+                    <div>
+                        <input type="text" name="symptom_text" placeholder="e.g., Migraine, Brain Fog, Bloating"
+                            required
+                            class="w-full bg-dark/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition shadow-inner">
+                    </div>
+                    <div>
+                        <select name="symptom_score"
+                            class="w-full bg-dark/50 border border-slate-700 rounded-xl px-4 py-3 text-slate-300 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition appearance-none">
+                            <option value="1">Level 1 - Barely Noticeable</option>
+                            <option value="2">Level 2 - Mild Discomfort</option>
+                            <option value="3" selected>Level 3 - Moderate Impact</option>
+                            <option value="4">Level 4 - Severe Disruption</option>
+                            <option value="5">Level 5 - Incapacitating</option>
+                        </select>
+                    </div>
+                    <button
+                        class="w-full btn-premium text-white font-bold py-3 rounded-xl shadow-lg border border-teal-400/30">
+                        Transmit Severity
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Main Panel: Neural Inference & Charts -->
+        <div class="lg:col-span-8 flex flex-col gap-6">
+
+            <!-- Vision & Ingestion Engine -->
+            <div class="glass rounded-3xl p-8 border-t border-t-white/10">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-white tracking-wide">High-Dimensional Ingestion</h2>
+                    <span
+                        class="text-[10px] font-mono text-teal-400 bg-teal-400/10 px-3 py-1 rounded-full border border-teal-400/20">
+                        YOLOv8 + Gemini Engine
+                    </span>
+                </div>
+
+                <form id="aiForm" method="POST" enctype="multipart/form-data" class="space-y-5">
+                    <div class="relative group z-10">
+                        <div
+                            class="absolute -inset-0.5 bg-gradient-to-r from-teal-500 to-blue-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500">
+                        </div>
+                        <div
+                            class="relative z-10 flex items-center bg-dark/80 rounded-2xl border border-slate-700/60 overflow-hidden">
+                            <div class="pl-5 text-slate-400">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                            </div>
+                            <input type="text" name="food" placeholder="Describe intake or raw ingredients..."
+                                class="w-full bg-transparent border-none px-4 py-4 text-white focus:outline-none focus:ring-0 placeholder-slate-500 text-lg">
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-4 items-center">
+                        <div class="w-full sm:w-1/2 relative">
+                            <input type="file" name="food_image" accept="image/*" id="file" class="hidden"
+                                onchange="document.getElementById('file-label-text').innerText = this.files[0] ? this.files[0].name : 'Upload Visual Data'">
+                            <label for="file"
+                                class="flex items-center justify-center gap-2 w-full glass-panel cursor-pointer py-3 rounded-xl hover:bg-white/5 transition border border-slate-700/50 text-slate-300 font-medium overflow-hidden whitespace-nowrap text-ellipsis px-4">
+                                <svg class="w-5 h-5 text-teal-400 shrink-0" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                    </path>
+                                </svg>
+                                <span id="file-label-text">Upload Visual Data</span>
+                            </label>
+                        </div>
+                        <button type="submit" id="submitBtn"
+                            class="w-full sm:w-1/2 btn-premium text-white font-bold py-3 rounded-xl shadow-lg border border-teal-400/30">
+                            Execute Omnibase Analysis
+                        </button>
+                    </div>
+                </form>
+
+                {% if results %}
+                <div class="mt-8 pt-8 border-t border-slate-700/50 animate-fade-in-up">
+                    <div class="flex flex-col md:flex-row justify-between items-start mb-6 gap-4">
+                        <div>
+                            <h3 class="text-2xl font-bold text-white">{{ results.food_name }}</h3>
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                {% for entity in results.entities_extracted %}
+                                <span
+                                    class="text-xs bg-slate-800 text-teal-300 px-3 py-1 rounded-full border border-slate-700 uppercase tracking-widest">{{
+                                    entity }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="text-left md:text-right">
+                            <span class="block text-xs text-slate-500 uppercase tracking-widest">Risk Index (MRI)</span>
+                            <span
+                                class="text-4xl font-black {% if results.risk_tier == 'Critical' %}text-red-500 text-shadow-red{% elif results.risk_tier == 'Elevated' %}text-amber-500 text-shadow-amber{% else %}text-teal-400 text-glow{% endif %}">
+                                {{ results.mri }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Macro Nutrients & Health Score Section -->
+                    {% if results.macronutrients %}
+                    <div class="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
+                        <div
+                            class="glass-panel p-4 rounded-xl text-center border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 transition cursor-pointer">
+                            <span class="block text-xl font-bold text-amber-300">{{ results.macronutrients.calories |
+                                default(0)
+                                }}</span>
+                            <span
+                                class="block text-[10px] text-amber-200/70 uppercase tracking-widest mt-1">Calories</span>
+                            <span class="block text-[8px] text-amber-500/50 uppercase mt-1">
+                                {{ ((results.macronutrients.calories | default(0) / daily_calories) * 100) | round(1)
+                                }}% of Daily
+                            </span>
+                        </div>
+                        <div class="glass-panel p-4 rounded-xl text-center border border-slate-700/50">
+                            <span class="block text-xl font-bold text-teal-300">{{ results.macronutrients.protein
+                                }}g</span>
+                            <span class="block text-[10px] text-slate-500 uppercase tracking-widest mt-1">Protein</span>
+                        </div>
+                        <div class="glass-panel p-4 rounded-xl text-center border border-slate-700/50">
+                            <span class="block text-xl font-bold text-teal-300">{{ results.macronutrients.fiber
+                                }}g</span>
+                            <span class="block text-[10px] text-slate-500 uppercase tracking-widest mt-1">Fiber</span>
+                        </div>
+                        <div class="glass-panel p-4 rounded-xl text-center border border-slate-700/50">
+                            <span class="block text-xl font-bold text-teal-300">{{ results.macronutrients.fat }}g</span>
+                            <span class="block text-[10px] text-slate-500 uppercase tracking-widest mt-1">Fat</span>
+                        </div>
+                        <div class="glass-panel p-4 rounded-xl text-center border border-slate-700/50">
+                            <span class="block text-xl font-bold text-teal-300">{{ results.macronutrients.carbs
+                                }}g</span>
+                            <span class="block text-[10px] text-slate-500 uppercase tracking-widest mt-1">Carbs</span>
+                        </div>
+                        <div
+                            class="glass-panel p-4 rounded-xl text-center border border-teal-500/30 relative overflow-hidden col-span-2 md:col-span-1">
+                            <div class="absolute inset-0 bg-teal-500/10"></div>
+                            <span class="block text-2xl font-black text-white relative z-10">{{ results.health_score
+                                }}</span>
+                            <span
+                                class="block text-[10px] text-teal-400 uppercase tracking-widest mt-1 relative z-10">Health
+                                Score</span>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if results.suggestions %}
+                    <div class="mb-6 space-y-3">
+                        <h4 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Nutritional
+                            Directives</h4>
+                        {% for suggestion in results.suggestions %}
+                        <div
+                            class="flex items-start gap-3 bg-dark/50 p-4 rounded-xl border border-slate-700/60 shadow-inner">
+                            <div class="p-1 rounded bg-teal-500/20 text-teal-400 shrink-0 mt-0.5">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <span class="text-sm text-slate-300 font-light leading-relaxed">{{ suggestion }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <div
+                        class="glass-panel p-5 rounded-2xl border-l-4 {% if results.risk_tier == 'Critical' %}border-red-500 bg-red-500/5{% elif results.risk_tier == 'Elevated' %}border-amber-500 bg-amber-500/5{% else %}border-teal-500 bg-teal-500/5{% endif %}">
+                        <h4
+                            class="text-xs font-bold uppercase tracking-widest mb-2 {% if results.risk_tier == 'Critical' %}text-red-400{% elif results.risk_tier == 'Elevated' %}text-amber-400{% else %}text-teal-400{% endif %}">
+                            Action: {{ results.dashboard_action }}
+                        </h4>
+                        <p class="text-slate-300 text-lg font-light leading-relaxed">
+                            {{ results.global_insight }}
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+
+
+            <!-- Nutritional Event History -->
+            <div class="glass rounded-3xl p-8 border-t border-t-white/10">
+                <h3 class="text-xl font-bold text-white mb-6">Temporal Ingestion History</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr
+                                class="text-slate-500 text-[10px] uppercase tracking-widest border-b border-slate-700/50">
+                                <th class="pb-4 font-normal">Timestamp</th>
+                                <th class="pb-4 font-normal">Event</th>
+                                <th class="pb-4 font-normal text-center">Protein</th>
+                                <th class="pb-4 font-normal text-center">Fiber</th>
+                                <th class="pb-4 font-normal text-center">Carbs</th>
+                                <th class="pb-4 font-normal text-center">MRI</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-700/30">
+                            {% for log in food_history %}
+                            <tr class="text-slate-300 hover:bg-white/5 transition duration-200">
+                                <td class="py-4 text-xs">{{ log.timestamp.strftime('%H:%M | %b %d') }}</td>
+                                <td class="py-4">
+                                    <span class="font-medium text-white">{{ log.food_name }}</span>
+                                    {% if log.has_image %}<span
+                                        class="ml-2 py-0.5 px-1.5 bg-teal-500/20 text-teal-400 text-[8px] rounded uppercase">Visual</span>{%
+                                    endif %}
+                                </td>
+                                <td class="py-4 text-center text-sm">
+                                    {{ log.details.macronutrients.protein if (log.details and
+                                    log.details.macronutrients) else '-' }}g
+                                </td>
+                                <td class="py-4 text-center text-sm">
+                                    {{ log.details.macronutrients.fiber if (log.details and log.details.macronutrients)
+                                    else '-' }}g
+                                </td>
+                                <td class="py-4 text-center text-sm">
+                                    {{ log.details.macronutrients.carbs if (log.details and log.details.macronutrients)
+                                    else '-' }}g
+                                </td>
+                                <td class="py-4 text-center">
+                                    <span
+                                        class="{% if log.details and log.details.mri > 59 %}text-red-400{% elif log.details and log.details.mri > 29 %}text-amber-400{% else %}text-teal-400{% endif %} font-bold">
+                                        {{ log.details.mri if log.details else '-' }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Inflammation Trajectory Chart -->
+            <div class="glass rounded-3xl p-8 flex-grow">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-bold text-white tracking-wide">Temporal Correlation Calculus</h3>
+                    <span class="text-[10px] text-slate-500 uppercase tracking-widest">72-Hour Half-Life Decay</span>
+                </div>
+                <!-- Chart Wrapper -->
+                <div class="relative w-full h-[250px] lg:h-[300px]">
+                    <canvas id="mriChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Flashed Messages Container -->
+        <div class="lg:col-span-12 w-full">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="space-y-4 mb-6">
+                {% for category, message in messages %}
+                {% if message is mapping %}
+                <div
+                    class="glass border-l-4 {% if message.risk == 'Critical' %}border-red-500{% elif message.risk == 'Elevated' %}border-amber-500{% else %}border-teal-500{% endif %} p-5 rounded-2xl flex items-start gap-4">
+                    <div>
+                        <h4
+                            class="text-lg font-bold uppercase tracking-widest flex items-center gap-2 {% if message.risk == 'Critical' %}text-red-400{% elif message.risk == 'Elevated' %}text-amber-400{% else %}text-teal-400{% endif %}">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Omni-Engine Insight
+                            <span
+                                class="text-xs ml-2 py-1 px-2 rounded-lg {% if message.risk == 'Critical' %}bg-red-500/20{% elif message.risk == 'Elevated' %}bg-amber-500/20{% else %}bg-teal-500/20{% endif %}">
+                                MRI: {{ message.mri }} ({{ message.risk }})
+                            </span>
+                        </h4>
+                        <p class="text-slate-200 mt-2 font-light leading-relaxed">{{ message.insight }}</p>
+                    </div>
+                </div>
+                {% else %}
+                <div class="glass border-l-4 border-slate-500 p-4 rounded-xl text-slate-200 font-light">
+                    {{ message }}
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+
+    <script>
+        // Button State
+        const form = document.getElementById('aiForm');
+        const btn = document.getElementById('submitBtn');
+        form.onsubmit = () => {
+            btn.disabled = true;
+            btn.innerHTML = `<svg class="animate-spin h-5 w-5 mr-3 inline-block" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Processing Sequence...`;
+        };
+
+        // Premium Gradient Chart
+        const ctx = document.getElementById('mriChart').getContext('2d');
+
+        // Setup Gradient Fill
+        let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(20, 184, 166, 0.4)'); // Teal transparent
+        gradient.addColorStop(1, 'rgba(20, 184, 166, 0.0)');
+
+        // History scores passed from backend
+        const histData = {{ history_scores | tojson }};
+        const labels = histData.map((_, i) => `T-${histData.length - i - 1}`);
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Metabolic Risk Index (MRI)',
+                    data: histData,
+                    borderColor: '#14B8A6',
+                    backgroundColor: gradient,
+                    borderWidth: 3,
+                    pointBackgroundColor: '#030712',
+                    pointBorderColor: '#14B8A6',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    fill: true,
+                    tension: 0.4 // Smooth curve
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        titleColor: '#F8FAFC',
+                        bodyColor: '#14B8A6',
+                        borderColor: '#334155',
+                        borderWidth: 1,
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false },
+                        ticks: { color: '#64748B', font: { family: 'Outfit' } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#64748B', font: { family: 'Outfit' } }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
+                },
+            }
+        });
+    </script>
+</body>
+
+</html>

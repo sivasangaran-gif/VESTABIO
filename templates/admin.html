@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        color: var(--text-light);
+    }
+    th, td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #334155;
+    }
+    th { color: var(--teal-accent); font-weight: 600; text-transform: uppercase; font-size: 0.9rem; }
+    tr:hover { background-color: rgba(255,255,255,0.02); }
+    .status-active { color: var(--teal-accent); }
+    .status-disabled { color: var(--danger); }
+</style>
+
+<div class="admin-header">
+    <h2>Super Admin Console <span style="color:var(--danger); font-size:1rem;">| System Owner</span></h2>
+</div>
+
+<div class="card">
+    <h3 class="card-title">Registered Users Overview</h3>
+    <div style="overflow-x:auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Email Address</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.role }}</td>
+                    <td class="{% if user.is_active %}status-active{% else %}status-disabled{% endif %}">
+                        {% if user.is_active %}Active{% else %}Suspended{% endif %}
+                    </td>
+                    <td>
+                        <form action="#" method="POST" style="display:inline;">
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            <button type="submit" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; background-color: #f59e0b;">Disable</button>
+                        </form>
+                        <form action="#" method="POST" style="display:inline;">
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            <button type="submit" class="btn btn-danger" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align:center; padding: 2rem; color:var(--text-muted);">No users found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
